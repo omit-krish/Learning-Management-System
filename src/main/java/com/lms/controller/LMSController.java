@@ -29,6 +29,7 @@ public class LMSController {
     public String welcomePage(Model model) {
         List<Instructor> instructors = instructorService.getInstructors();
         System.out.println("checking git hub");
+        System.out.println("feature branch checking");
         String s = instructors.isEmpty() ? "yes it is empty" : "yes  isn't empty";
 
         System.out.println(s);
