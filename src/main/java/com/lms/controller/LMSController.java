@@ -28,7 +28,7 @@ public class LMSController {
     @GetMapping("/instructors")
     public String welcomePage(Model model) {
         List<Instructor> instructors = instructorService.getInstructors();
-
+        System.out.println("checking git hub");
         String s = instructors.isEmpty() ? "yes it is empty" : "yes  isn't empty";
 
         System.out.println(s);
