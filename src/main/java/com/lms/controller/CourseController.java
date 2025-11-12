@@ -3,8 +3,10 @@ package com.lms.controller;
 import com.lms.DTO.PageDTO;
 import com.lms.Entity.Course;
 import com.lms.Entity.Instructor;
+import com.lms.Entity.Lesson;
 import com.lms.service.CourseService;
 import com.lms.service.InstructorService;
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@SessionAttributes("pageDTO")
+@SessionAttributes({"course", "pagedListHolder", "pageDTO"})
 public class CourseController {
     private final CourseService courseService;
     private final InstructorService instructorService;
@@ -24,18 +26,10 @@ public class CourseController {
     }
 
 
-    @GetMapping("/viewCourse")
-    public String showCourse(@RequestParam("courseID") Integer id, Model model) {
-        System.out.println("inside showCourse method with courseID: " + id);
-        Course course = courseService.getCourseByID(id);
-
-        if (course == null) {
-            // course not found - redirect to a not-found page or home
-            return "redirect:/";
-        }
-
+    private static PageDTO getPageDTO(Course course) {
         PageDTO pageDTO = new PageDTO();
 
+        assert course != null;
         if (course.getLessons() != null && !course.getLessons().isEmpty()) {
             pageDTO.setFirstLessonId(course.getLessons().get(0).getId());
             pageDTO.setLastLessonId(course.getLessons().get(course.getLessons().size() - 1).getId());
@@ -44,10 +38,39 @@ public class CourseController {
             pageDTO.setFirstLessonId(null);
             pageDTO.setLastLessonId(null);
         }
+        return pageDTO;
+    }
+
+    @GetMapping("/viewCourse")
+    public String showCourse(@RequestParam("courseID") Integer id,
+                             @RequestParam(name = "pageNum", required = false) Integer pageNum, Model model) {
+        System.out.println("inside showCourse method with courseID: " + id);
+        Course course = null;
+        PagedListHolder<Lesson> pagedListHolder = null;
+        if (pageNum == null) {
+            pagedListHolder = new PagedListHolder<>();
+            course = courseService.getCourseByID(id);
+            model.addAttribute("course", course);
+            model.addAttribute("pagedListHolder", pagedListHolder);
+            pagedListHolder.setSource(course.getLessons());
+            pagedListHolder.setPage(0);
+            pagedListHolder.setPageSize(2);
+        } else {
+            PagedListHolder<Lesson> pagedListHolder1 = ((PagedListHolder<Lesson>) model.getAttribute("pagedListHolder"));
+            assert pagedListHolder1 != null;
+            pagedListHolder1.setPage(pageNum);
+            pagedListHolder1.setPageSize(2);
+        }
+
+        Course courseFromSession = ((Course) model.getAttribute("course"));
+        PagedListHolder<Lesson> pagedListHolderFromSession = ((PagedListHolder<Lesson>) model.getAttribute("pagedListHolder"));
+
+        assert courseFromSession != null;
+        PageDTO pageDTO = getPageDTO(courseFromSession);
 
         model.addAttribute("pageDTO", pageDTO);
-        model.addAttribute("course", course);
-
+        model.addAttribute("course", courseFromSession);
+        model.addAttribute("pagedListHolder", pagedListHolderFromSession);
         System.out.println(">>>>>>>>>>>>" + pageDTO);
         return "course";
     }

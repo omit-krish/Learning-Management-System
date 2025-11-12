@@ -30,6 +30,13 @@
         .lesson-link:hover { text-decoration: underline; }
         .lesson-title { font-weight: 600; color: #111827; margin-bottom: 6px; }
         .lesson-meta { font-size: 0.9rem; color: #6b7280; }
+        /* Pagination styles */
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px; }
+        .pagination a, .pagination span { text-decoration: none; padding: 8px 12px; border: 1px solid #ddd; color: #0b5ed7; border-radius: 4px; }
+        .pagination a:hover { background-color: #f0f0f0; }
+        .pagination .current { font-weight: bold; background-color: #0b5ed7; color: white; border-color: #0b5ed7; }
+        .pagination .disabled { color: #aaa; pointer-events: none; background-color: #f8f9fa; }
+
         .lesson-empty { text-align: center; color: #6b7280; padding: 20px 0; }
         @media (max-width: 480px) {
             .lesson-card { width: 100%; }
@@ -48,7 +55,7 @@
         <!-- Iterate lessons collection and render as cards -->
         <c:if test="${not empty course.lessons}">
             <div class="lesson-list">
-                <c:forEach var="lesson" items="${course.lessons}">
+                <c:forEach var="lesson" items="${pagedListHolder.pageList}">
                     <div class="lesson-card">
                         <div>
                             <a class="lesson-link" href="${pageContext.request.contextPath}/openLesson?lessonId=${lesson.id}">
@@ -66,6 +73,38 @@
         </c:if>
 
     </div>
+
+    <!-- Pagination Controls -->
+    <c:if test="${pagedListHolder.pageCount > 1}">
+        <div class="pagination">
+            <!-- Previous Page Link -->
+            <c:choose>
+                <c:when test="${pagedListHolder.isFirstPage()}">
+                    <span class="disabled">&laquo; Prev</span>
+                </c:when>
+                <c:otherwise>
+                    <a href="viewCourse?courseID=${course.id}&pageNum=${pagedListHolder.page - 1}">&laquo; Prev</a>
+                </c:otherwise>
+            </c:choose>
+
+            <!-- Page Number Links -->
+            <c:forEach begin="0" end="${pagedListHolder.pageCount - 1}" var="i">
+                <c:choose>
+                    <c:when test="${pagedListHolder.page eq i}">
+                        <span class="current">${i + 1}</span>
+                    </c:when>
+                    <c:otherwise>
+                        <a href="viewCourse?courseID=${course.id}&pageNum=${i}">${i + 1}</a>
+                    </c:otherwise>
+                </c:choose>
+            </c:forEach>
+
+            <!-- Next Page Link -->
+            <c:if test="${!pagedListHolder.isLastPage()}">
+                <a href="viewCourse?courseID=${course.id}&pageNum=${pagedListHolder.page + 1}">Next &raquo;</a>
+            </c:if>
+        </div>
+    </c:if>
 
 <br/>
 <br/>
