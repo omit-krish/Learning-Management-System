@@ -1,6 +1,8 @@
 package com.lms.controller;
 
+import com.lms.Entity.Course;
 import com.lms.Entity.Instructor;
+import com.lms.service.CourseService;
 import com.lms.service.InstructorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,9 @@ public class LMSController {
 
     @Autowired
     private InstructorService instructorService;
+
+    @Autowired
+    private CourseService courseService;
 
 
     @GetMapping("/")
@@ -77,6 +82,13 @@ public class LMSController {
     //    deleteByID
     @GetMapping("deleteByID/{id}")
     public String deleteById(@PathVariable("id") int id) {
+        Instructor instructor = instructorService.findInstructorById(id);
+
+        for (Course course : instructor.getCourses()) {
+            course.setInstructor(null);
+            courseService.addCourse(course);
+        }
+
         instructorService.deleteById(id);
         return "redirect:/instructors";
     }

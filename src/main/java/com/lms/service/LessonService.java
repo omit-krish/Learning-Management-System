@@ -4,4 +4,7 @@ import com.lms.Entity.Lesson;
 
 public interface LessonService {
     Lesson getLessonByID(Integer id);
+
+    void saveLesson(Lesson lesson);
 }
+

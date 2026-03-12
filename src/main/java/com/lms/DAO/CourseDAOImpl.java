@@ -27,7 +27,7 @@ public class CourseDAOImpl implements CourseDAO {
     public Integer addCourse(Course course) {
 
         Session session = sessionFactory.getCurrentSession();
-        session.persist(course);
+        session.saveOrUpdate(course);
 
         return course.getId();
     }

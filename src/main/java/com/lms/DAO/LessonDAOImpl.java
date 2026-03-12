@@ -27,4 +27,11 @@ public class LessonDAOImpl implements LessonDAO {
         }
         return null;
     }
+
+    @Override
+    public void saveLesson(Lesson lesson) {
+        Session session = sessionFactory.getCurrentSession();
+
+        session.saveOrUpdate(lesson);
+    }
 }
