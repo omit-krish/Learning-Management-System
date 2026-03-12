@@ -17,4 +17,11 @@ public class LessonServiceImpl implements LessonService {
     public Lesson getLessonByID(Integer id) {
         return lessonDAO.getLessonByID(id);
     }
+
+    @Transactional
+    @Override
+    public void saveLesson(Lesson lesson) {
+
+        lessonDAO.saveLesson(lesson);
+    }
 }

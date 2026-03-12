@@ -77,11 +77,12 @@ public class CourseController {
 
 
     @GetMapping("/addCourse")
-    public String addCourse(@ModelAttribute("course") Course course, Model model) {
+    public String addCourse(Course course, Model model) {
 
         System.out.println("inside addCourse method");
         List<Instructor> instructors = instructorService.getInstructors();
         model.addAttribute("instructors", instructors);
+        model.addAttribute("course",course);
         return "addCoursePage";
     }
 
